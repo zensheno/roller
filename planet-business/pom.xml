@@ -197,7 +197,8 @@
 
                     <!-- Ensure tests will run even if 'openjpa' profile not active -->
                     <forkMode>once</forkMode>
-                    <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
+                    <!-- <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine> -->
+                    <argLine>-javaagent:"E:/java/local-repo/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
                     
                     <systemProperties>
                         <property>
@@ -257,7 +258,7 @@
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
-
+<!-- 
                 <executions>
 
                     <execution>
@@ -289,7 +290,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <!-- Derby only for unit testing: skip when maven.text.skip is set -->
+                                <!- - Derby only for unit testing: skip when maven.text.skip is set - ->
                                 <delete dir="${project.build.directory}/derby-system" verbose="true" failonerror="false" />
                                 <taskdef name="startdb" classname="org.apache.roller.weblogger.ant.StartDerbyTask"
                                          classpathref="maven.test.classpath"/>
@@ -310,7 +311,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <!-- Derby only for unit testing: skip when maven.text.skip is set -->
+                                <!- - Derby only for unit testing: skip when maven.text.skip is set - ->
                                 <taskdef name="stopdb" classname="org.apache.roller.weblogger.ant.StopDerbyTask"
                                          classpathref="maven.test.classpath"/>
                                 <stopdb databaseDir="${project.build.directory}/derby-system"
@@ -324,6 +325,7 @@
                     </execution>
 
                 </executions>
+ -->                
             </plugin>
 
         </plugins>
