@@ -183,8 +183,8 @@
 
                     <!-- Ensure tests will run even if 'openjpa' profile not active -->
                     <forkMode>once</forkMode>
-                    <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
-                    
+                    <!-- <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine> -->
+                     <argLine>-javaagent:"E:/java/local-repo/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
                     <systemProperties>
                         <property>
                             <name>catalina.base</name>
@@ -230,7 +230,6 @@
                         <version>${derby.version}</version>
                     </dependency>
                 </dependencies>
-
                 <executions>
 
                     <execution>

@@ -18,24 +18,25 @@
 package org.apache.roller.weblogger.ui.core.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.AuthenticationServiceException;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.CredentialsExpiredException;
-import org.springframework.security.DisabledException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.SpringSecurityMessageSource;
-import org.springframework.security.providers.AuthenticationProvider;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -170,7 +171,7 @@ public class CrowdAuthenticationProvider implements AuthenticationProvider {
 				CrowdRollerUserDetails crowdRollerUserDetails = 
 						new CrowdRollerUserDetails(user, authentication.getCredentials().toString(), crowdTimezone, crowdLocale, grantedAuthorities);
 
-				authenticationToken = new UsernamePasswordAuthenticationToken(crowdRollerUserDetails, authentication.getCredentials(), grantedAuthorities);
+				authenticationToken = new UsernamePasswordAuthenticationToken(crowdRollerUserDetails, authentication.getCredentials(), Arrays.asList(grantedAuthorities));
 
 			} catch (UserNotFoundException e) {
 				throw new UsernameNotFoundException(e.getMessage(), e);

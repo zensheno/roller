@@ -231,8 +231,8 @@
 
                     <!-- Ensure tests will run even if 'openjpa' profile not active -->
                     <forkMode>once</forkMode>
-                    <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
-                    
+                    <!-- <argLine>-javaagent:"${user.home}/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine> -->
+                    <argLine>-javaagent:"E:/java/local-repo/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar"</argLine>
                     <systemProperties>
                         <property>
                             <name>catalina.base</name>
@@ -354,6 +354,7 @@
                     </execution>
 
                 </executions>
+                
             </plugin>
 
             <plugin>
@@ -463,6 +464,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        
                         <executions>
                             <execution>
                                 <id>openjpa-enhance</id>
@@ -481,6 +483,7 @@
                                 </goals>
                             </execution>
                         </executions>
+                       
                     </plugin>
                 </plugins>
             </build>

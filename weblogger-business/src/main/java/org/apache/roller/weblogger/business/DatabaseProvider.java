@@ -62,7 +62,7 @@ public class DatabaseProvider  {
     
     private static Log log = LogFactory.getLog(DatabaseProvider.class);
 
-    public enum ConfigurationType {JNDI_NAME, JDBC_PROPERTIES;}
+    public enum ConfigurationType {JNDI_NAME, JDBC_PROPERTIES, CLOUD_DATASOURCE;}
     private ConfigurationType type = ConfigurationType.JNDI_NAME;
     private List<String> startupLog = new ArrayList<String>();
     
@@ -119,7 +119,7 @@ public class DatabaseProvider  {
             }
             
         // Else attempt to locate JNDI datasource
-        } else { 
+        } else if("jndi".equals(connectionTypeString)){ 
             String name = (getJndiName().indexOf(":") == -1 ? "java:comp/env/" + getJndiName() : getJndiName());
             successMessage("-- Using JNDI datasource name: " + name);
             try {
@@ -133,7 +133,12 @@ public class DatabaseProvider  {
                 throw new StartupException(errorMsg, ex, startupLog);
             }            
             successMessage("SUCCESS: located JNDI DataSource [" +name+ "]");
+        // Else attemp to get 
+        } else if("cloudb".equals(connectionTypeString)) {
+        	
         }
+        
+        
         
         // So far so good. Now, can we get a connection?
         try { 

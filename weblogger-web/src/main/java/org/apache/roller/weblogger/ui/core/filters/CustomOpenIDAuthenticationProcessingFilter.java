@@ -18,20 +18,23 @@
 
 package org.apache.roller.weblogger.ui.core.filters;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.providers.openid.OpenIDAuthenticationToken;
-import org.springframework.security.ui.openid.OpenIDAuthenticationProcessingFilter;
-import org.springframework.security.userdetails.UsernameNotFoundException;
-import org.springframework.security.ui.openid.OpenIDConsumer;
-//import org.springframework.security.userdetails.openid.OpenIDUserAttribute;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.openid.OpenIDAuthenticationFilter;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
+import org.springframework.security.openid.OpenIDConsumer;
 
 
 /**
@@ -39,20 +42,26 @@ import org.springframework.security.ui.openid.OpenIDConsumer;
  * @author Tatyana Tokareva
  */
 public class CustomOpenIDAuthenticationProcessingFilter 
-        extends OpenIDAuthenticationProcessingFilter implements Filter {
+        extends OpenIDAuthenticationFilter implements Filter {
 
     private OpenIDConsumer consumer;
     private String claimedIdentityFieldName = DEFAULT_CLAIMED_IDENTITY_FIELD;
     private static Log log = LogFactory.getLog(CustomOpenIDAuthenticationProcessingFilter.class);
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest req , HttpServletResponse resp)
+    		throws AuthenticationException, IOException { 
         OpenIDAuthenticationToken auth = null;
 
         // Processing standard OpenId user authentication    
-        auth = (OpenIDAuthenticationToken) super.attemptAuthentication(req);
-
-        if (auth.getAuthorities()[0].getAuthority().equals("openidLogin")) {
+        auth = (OpenIDAuthenticationToken) super.attemptAuthentication(req, resp);
+        
+        GrantedAuthority grantedAuthorityFirst = null;
+        while(auth.getAuthorities().iterator().hasNext()) {
+        	grantedAuthorityFirst = auth.getAuthorities().iterator().next();
+        	break;
+        }
+        if (grantedAuthorityFirst!=null && grantedAuthorityFirst.getAuthority().equals("openidLogin")) {
 
             /* TODO: when Spring Security 2.1 is released, we can uncomment 
              * this code, which will allow us to pre-populate the new user 
@@ -83,9 +92,9 @@ public class CustomOpenIDAuthenticationProcessingFilter
      */
     @Override
     protected String lookupRealm(String returnToUrl) {
-
-        String mapping = (String) getRealmMapping().get(returnToUrl);
-
+//        String mapping = (String) getRealmMapping().get(returnToUrl);
+        String mapping =  lookupRealm(returnToUrl);
+       
         if (mapping == null) {
             try {
                 URL url = new URL(returnToUrl);

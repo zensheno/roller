@@ -17,6 +17,10 @@
  */
 package org.apache.roller.weblogger.ui.core.security;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.Weblogger;
@@ -24,13 +28,11 @@ import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.User;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.ldap.LdapAuthoritiesPopulator;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 
 /**
@@ -45,7 +47,7 @@ public class AuthoritiesPopulator implements LdapAuthoritiesPopulator {
     /* (non-Javadoc)
      * @see org.springframework.security.ldap.LdapAuthoritiesPopulator#getGrantedAuthorities(org.springframework.ldap.core.DirContextOperations, String)
      */
-    public GrantedAuthority[] getGrantedAuthorities(DirContextOperations userData, String username) {
+    public Collection<GrantedAuthority> getGrantedAuthorities(DirContextOperations userData, String username) {
 
         // This check is probably unnecessary.
         if (userData == null) {
@@ -68,10 +70,10 @@ public class AuthoritiesPopulator implements LdapAuthoritiesPopulator {
         }
 
         int roleCount = roles.size() + (defaultRole != null ? 1 : 0);
-        GrantedAuthority[] authorities = new GrantedAuthorityImpl[roleCount];
+        GrantedAuthority[] authorities = new SimpleGrantedAuthority[roleCount];
         int i = 0;
         for(String role : roles) {
-            authorities[i++] = new GrantedAuthorityImpl(role);
+            authorities[i++] = new SimpleGrantedAuthority(role);
         }
         
         if (defaultRole != null) {
@@ -83,7 +85,7 @@ public class AuthoritiesPopulator implements LdapAuthoritiesPopulator {
             throw new UsernameNotFoundException("User " + username + " has no roles granted and there is no default role set.");
         }
 
-        return authorities;
+        return Arrays.asList(authorities);
     }
 
     /**
@@ -93,6 +95,6 @@ public class AuthoritiesPopulator implements LdapAuthoritiesPopulator {
      */
     public void setDefaultRole(String defaultRole) {
         Assert.notNull(defaultRole, "The defaultRole property cannot be set to null");
-        this.defaultRole = new GrantedAuthorityImpl(defaultRole);
+        this.defaultRole = new SimpleGrantedAuthority(defaultRole);
     }
 }

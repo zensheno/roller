@@ -26,14 +26,14 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.pojos.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
 /**
  * @author Elias Torres (<a href="mailto:eliast@us.ibm.com">eliast@us.ibm.com</a>)
@@ -138,8 +138,8 @@ public class CustomUserRegistry {
             
             } else if(userDetails instanceof LdapUserDetails) {
                 LdapUserDetails ldapDetails = (LdapUserDetails) userDetails;
-
-                Attributes attributes = ldapDetails.getAttributes();
+                
+                Attributes attributes = null;//ldapDetails.getAttributes();
                 screenName = getLdapAttribute(attributes, WebloggerConfig.getProperty(SNAME_LDAP_PROPERTY, DEFAULT_SNAME_LDAP_ATTRIBUTE));
                 fullName = getLdapAttribute(attributes, WebloggerConfig.getProperty(NAME_LDAP_PROPERTY, DEFAULT_NAME_LDAP_ATTRIBUTE));
                 email = getLdapAttribute(attributes, WebloggerConfig.getProperty(EMAIL_LDAP_PROPERTY, DEFAULT_EMAIL_LDAP_ATTRIBUTE));

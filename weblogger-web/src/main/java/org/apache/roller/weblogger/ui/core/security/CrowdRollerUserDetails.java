@@ -17,7 +17,10 @@
  */
 package org.apache.roller.weblogger.ui.core.security;
 
-import org.springframework.security.GrantedAuthority;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import com.atlassian.crowd.model.user.User;
 
@@ -63,8 +66,8 @@ public class CrowdRollerUserDetails implements RollerUserDetails {
 	/* (non-Javadoc)
 	 * @see org.springframework.security.userdetails.UserDetails#getAuthorities()
 	 */
-	public GrantedAuthority[] getAuthorities() {
-		return grantedAuthorities;
+	public Collection<GrantedAuthority> getAuthorities() {
+		return Arrays.asList(grantedAuthorities);
 	}
 
 	/* (non-Javadoc)

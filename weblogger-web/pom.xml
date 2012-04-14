@@ -26,6 +26,11 @@
     <version>5.1.0</version>
     <packaging>jar</packaging>
 
+	<properties>
+		<org.cloudfoundry-version>0.8.1</org.cloudfoundry-version>
+		<org.springframework-version>3.1.0.RELEASE</org.springframework-version>	
+	</properties>
+	
     <dependencies>
 
         <dependency>
@@ -199,12 +204,26 @@
             </exclusions>
         </dependency>
 
+		<!-- mysql driver -->
+		<dependency>
+		  <groupId>mysql</groupId>
+		  <artifactId>mysql-connector-java</artifactId>
+		  <version>5.1.18</version>
+		</dependency>
+
+		<!-- CloudFoundry -->
+		<dependency>
+			<groupId>org.cloudfoundry</groupId>
+			<artifactId>cloudfoundry-runtime</artifactId>
+			<version>${org.cloudfoundry-version}</version>
+		</dependency>
+		
         <!-- spring deps -->
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>2.5.6.SEC03</version>
+            <version>${org.springframework-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>aopalliance</groupId>
@@ -216,9 +235,20 @@
        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>2.5.6.SEC03</version>
+            <version>${org.springframework-version}</version>
        </dependency>
 
+       <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${org.springframework-version}</version>
+       </dependency>
+       <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${org.springframework-version}</version>
+       </dependency>
+              
        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-dao</artifactId>
@@ -228,13 +258,19 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>2.0.7.RELEASE</version>
+            <version>${org.springframework-version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>        
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-openid</artifactId>
-            <version>2.0.7.RELEASE</version>
+            <version>${org.springframework-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openid4java</groupId>
@@ -246,13 +282,13 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>2.0.7.RELEASE</version>
+            <version>${org.springframework-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>2.0.7.RELEASE</version>
+            <version>${org.springframework-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -260,12 +296,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        
+<!--         
+		<dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap</artifactId>
             <version>1.2</version>
-        </dependency>
+        </dependency> 
+        -->
 
          <!-- OpenID deps -->
 
@@ -337,7 +381,7 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <scope>provided</scope>
+          <!--   <scope>provided</scope> -->
             <exclusions>
                 <exclusion>
                     <artifactId>activation</artifactId>
@@ -569,7 +613,6 @@
                         <version>${derby.version}</version>
                     </dependency>
                 </dependencies>
-
                 <executions>
 
                     <execution>

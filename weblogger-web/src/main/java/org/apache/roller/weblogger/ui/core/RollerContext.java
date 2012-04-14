@@ -20,39 +20,43 @@ package org.apache.roller.weblogger.ui.core;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Properties;
 import java.util.Iterator;
+import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import org.springframework.security.providers.AuthenticationProvider;
-import org.springframework.security.providers.ProviderManager;
-import org.springframework.security.providers.dao.DaoAuthenticationProvider;
-import org.springframework.security.providers.dao.UserCache;
-import org.springframework.security.providers.encoding.Md5PasswordEncoder;
-import org.springframework.security.providers.encoding.PasswordEncoder;
-import org.springframework.security.providers.encoding.ShaPasswordEncoder;
-import org.springframework.security.providers.rememberme.RememberMeAuthenticationProvider;
-import org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint;
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.planet.business.GuicePlanetProvider;
-import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.business.BootstrapException;
-import org.apache.roller.weblogger.business.startup.StartupException;
-import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.planet.business.PlanetFactory;
 import org.apache.roller.planet.business.PlanetProvider;
 import org.apache.roller.planet.business.startup.PlanetStartup;
+import org.apache.roller.weblogger.WebloggerException;
+import org.apache.roller.weblogger.business.BootstrapException;
+import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.startup.StartupException;
 import org.apache.roller.weblogger.business.startup.WebloggerStartup;
+import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.ui.core.plugins.UIPluginManager;
 import org.apache.roller.weblogger.ui.core.plugins.UIPluginManagerImpl;
 import org.apache.roller.weblogger.ui.core.security.AutoProvision;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 import org.apache.velocity.runtime.RuntimeSingleton;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.RememberMeAuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.userdetails.UserCache;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -133,7 +137,16 @@ public class RollerContext extends ContextLoaderListener
         // enough to disregard this call unless the themes.dir
         // is set to ${webapp.context}
         WebloggerConfig.setThemesDir(servletContext.getRealPath("/")+File.separator+"themes");
+
+// add by wesley.shen for retain a data-source from cloudfoundry's service
+        ApplicationContext ctx =
+                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        CloudEnvironment env = new CloudEnvironment();
+        ctx.getEnvironment().getActiveProfiles();
+        //DataSource clouds = (DataSource)ctx.getBean("mysql-srv");
         
+        log.info("---@---@---@---@---@---@---@---@--- " + env.getInstanceInfo());
+// end by wesley.shen        
         
         // Now prepare the core services of the app so we can bootstrap
         try {
@@ -287,7 +300,7 @@ public class RollerContext extends ContextLoaderListener
         boolean doEncrypt = Boolean.valueOf(encryptPasswords).booleanValue();
         
         if (doEncrypt) {
-            DaoAuthenticationProvider provider = (DaoAuthenticationProvider) ctx.getBean("org.springframework.security.providers.dao.DaoAuthenticationProvider#0");
+            DaoAuthenticationProvider provider = (DaoAuthenticationProvider) ctx.getBean("org.springframework.security.authentication.dao.DaoAuthenticationProvider#0");
             String algorithm = WebloggerConfig.getProperty("passwds.encryption.algorithm");
             PasswordEncoder encoder = null;
             if (algorithm.equalsIgnoreCase("SHA")) {
@@ -304,8 +317,8 @@ public class RollerContext extends ContextLoaderListener
         }
 
         if (WebloggerConfig.getBooleanProperty("securelogin.enabled")) {
-            AuthenticationProcessingFilterEntryPoint entryPoint =
-                (AuthenticationProcessingFilterEntryPoint) ctx.getBean("_formLoginEntryPoint");
+        		LoginUrlAuthenticationEntryPoint entryPoint =
+                (LoginUrlAuthenticationEntryPoint) ctx.getBean("_formLoginEntryPoint");
             entryPoint.setForceHttps(true);
         }
    

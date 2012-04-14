@@ -1,22 +1,24 @@
 package org.apache.roller.weblogger.ui.core.security;
 
+import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UserDetailsService;
-import org.springframework.security.userdetails.UsernameNotFoundException;
 import org.apache.roller.weblogger.WebloggerException;
+import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.UserAttribute;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * Spring Security UserDetailsService implemented using Weblogger API.
@@ -58,7 +60,7 @@ public class RollerUserDetailsService implements UserDetailsService {
                 // from the authentication filter and save them                
                 if (userData == null) {
                      authorities = new GrantedAuthority[1];
-                     GrantedAuthority g = new GrantedAuthorityImpl("openidLogin");
+                     GrantedAuthority g = new SimpleGrantedAuthority("openidLogin");
                      authorities[0] = g;
                      name = "openid";
                      password = "openid";
@@ -67,7 +69,7 @@ public class RollerUserDetailsService implements UserDetailsService {
                      name = userData.getUserName();
                      password = userData.getPassword();
                 }
-                UserDetails usr = new org.springframework.security.userdetails.User(name, password, true, authorities);
+                UserDetails usr = new org.springframework.security.core.userdetails.User(name, password, /*true, */Arrays.asList(authorities));
                 return  usr;
                 
             } else {
@@ -80,7 +82,7 @@ public class RollerUserDetailsService implements UserDetailsService {
                     throw new UsernameNotFoundException("ERROR no user: " + userName);
                 }
                 GrantedAuthority[] authorities =  getAuthorities(userData, umgr);        
-                return new org.springframework.security.userdetails.User(userData.getUserName(), userData.getPassword(), true, authorities);
+                return new org.springframework.security.core.userdetails.User(userData.getUserName(), userData.getPassword(),/* true,*/Arrays.asList(authorities));
             }            
         } catch (WebloggerException ex) {
             throw new DataAccessResourceFailureException("ERROR: fetching roles", ex);
@@ -91,10 +93,10 @@ public class RollerUserDetailsService implements UserDetailsService {
         
      private GrantedAuthority[] getAuthorities(User userData, UserManager umgr) throws WebloggerException {
              List<String> roles = umgr.getRoles(userData);
-            GrantedAuthority[] authorities = new GrantedAuthorityImpl[roles.size()];
+            GrantedAuthority[] authorities = new SimpleGrantedAuthority[roles.size()];
             int i = 0;
             for (String role : roles) {
-                authorities[i++] = new GrantedAuthorityImpl(role);
+                authorities[i++] = new SimpleGrantedAuthority(role);
             }
             return authorities;
         }
